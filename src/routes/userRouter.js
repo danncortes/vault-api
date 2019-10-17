@@ -1,10 +1,13 @@
 const userRouter = require('express')();
-const { fetchUsers, createUser, findUser, updateUser, deleteUser } = require('../services/userService');
+const { createUser, findUser, updateUser, deleteUser, loginUser, logoutUser, logoutUserAll } = require('../services/userService');
+const auth = require('../middleware/auth');
 
 userRouter.post('/users', createUser);
-userRouter.get('/users', fetchUsers);
-userRouter.get('/users/:id', findUser);
-userRouter.patch('/users/:id', updateUser);
-userRouter.delete('/users/:id', deleteUser);
+userRouter.post('/users/login', loginUser);
+userRouter.get('/users/me', auth, findUser);
+userRouter.patch('/users/me', auth, updateUser);
+userRouter.delete('/users/me', auth, deleteUser);
+userRouter.post('/users/logout', auth, logoutUser);
+userRouter.post('/users/logoutAll', auth, logoutUserAll);
 
 module.exports = userRouter;

@@ -1,40 +1,24 @@
-const { User } = require('../db/models');
-
-const fetchUsers = async (req, res) => {
-  try {
-    const users = await User.find();
-    res.status(200).send(users);
-  } catch (e) {
-    res.status(500).send(e);
-  }
-};
+const User = require('../db/models/User');
+const Cred = require('../db/models/Cred');
 
 const findUser = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const user = await User.findById(id);
-    if (!user) {
-      return res.status(404).send();
-    }
-    res.status(200).send(user);
-  } catch (e) {
-    res.status(500).send(e);
-  }
+  res.status(200).send(req.user);
 };
 
 const createUser = async (req, res) => {
   const user = new User(req.body);
   try {
-    const resp = await user.save();
+    await user.save();
+    const token = await user.generateAuthToken();
     console.log('User created Successfully');
-    res.status(201).send(resp);
+    res.status(201).send({ user, token });
   } catch (e) {
     res.status(400).send(e);
   }
 };
 
 const updateUser = async (req, res) => {
-  const { params: { id }, body } = req;
+  const { body } = req;
 
   const fieldsToUpdate = Object.keys(body);
   const allowedUpdates = ['name', 'password'];
@@ -47,11 +31,10 @@ const updateUser = async (req, res) => {
   }
 
   try {
-    const user = await User.findByIdAndUpdate(id, body, { runValidators: true, new: true });
+    const { user } = req;
+    fieldsToUpdate.forEach(field => { user[field] = body[field]; });
+    await user.save();
     console.log('User updated Successfully');
-    if (!user) {
-      return res.status(404).send();
-    }
     res.status(202).send(user);
   } catch (e) {
     res.status(400).send(e);
@@ -59,24 +42,57 @@ const updateUser = async (req, res) => {
 };
 
 const deleteUser = async (req, res) => {
-  const { id } = req.params;
-
   try {
-    const user = await User.findByIdAndDelete(id);
-
-    if (!user) {
-      return res.status(404).send();
-    }
-    res.status(200).send(user);
+    await req.user.remove();
+    await Cred.deleteMany({ userId: req.user._id });
+    res.status(200).send(req.user);
   } catch (e) {
     res.status(500).send(e);
   }
 };
 
+const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findByCredentials(email, password);
+    const token = await user.generateAuthToken();
+    res.status(200).send({ user, token });
+  } catch (e) {
+    res.status(400).send(e);
+  }
+};
+
+const logoutUser = async (req, res) => {
+  const { user, token } = req;
+
+  try {
+    user.tokens = user.tokens.filter(tokn => tokn.token !== token);
+    await user.save();
+    res.send();
+  } catch (e) {
+    res.status(500).send();
+  }
+};
+
+const logoutUserAll = async (req, res) => {
+  const { user } = req;
+
+  try {
+    user.tokens = [];
+    await user.save();
+    res.send();
+  } catch (e) {
+    res.status(500).send();
+  }
+};
+
 module.exports = {
-  fetchUsers,
   createUser,
   findUser,
   updateUser,
-  deleteUser
+  deleteUser,
+  loginUser,
+  logoutUser,
+  logoutUserAll
 };

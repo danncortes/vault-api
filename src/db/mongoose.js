@@ -16,4 +16,6 @@ mongoose.connect(connectionUrl, {
   console.log(chalk.bgGreenBright.bold('Connected to Data Base Successfully!'));
 });
 
+mongoose.set('useFindAndModify', false);
+
 module.exports = { mongoose };
