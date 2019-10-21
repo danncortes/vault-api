@@ -3,6 +3,7 @@ const validateEmail = require('validator').isEmail;
 const { CIPHER_PASS } = process.env;
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { Cred } = require('./Cred');
 
 const userModelObj = {
   name: {
@@ -35,7 +36,7 @@ const userModelObj = {
   ]
 };
 
-const userSchema = new mongoose.Schema(userModelObj);
+const userSchema = new mongoose.Schema(userModelObj, { timestamps: true });
 
 userSchema.statics.findByCredentials = async (email, password) => { // This is accessible from the User model -> User.findByCredentials
   const user = await User.findOne({ email });
@@ -75,6 +76,12 @@ userSchema.pre('save', async function (next) {
   if (user.isModified('password')) {
     user.password = await bcrypt.hash(user.password, 8);
   }
+  next();
+});
+
+userSchema.pre('remove', async function (next) {
+  const user = this;
+  await Cred.deleteMany({ userId: user._id });
   next();
 });
 

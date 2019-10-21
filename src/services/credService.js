@@ -1,4 +1,5 @@
-const Cred = require('../db/models/Cred');
+const { Cred, credSchema } = require('../db/models/Cred');
+const { decryptData } = require('../helpers/cryptDecrypt');
 
 const createCred = async (req, res) => {
   const cred = new Cred({
@@ -17,6 +18,11 @@ const createCred = async (req, res) => {
 const fetchCred = async (req, res) => {
   try {
     const cred = await Cred.find({ userId: req.user._id });
+    if (cred.length > 0) {
+      cred.forEach(cr => {
+        cr.data = decryptData(cr.data);
+      });
+    }
     res.status(201).send(cred);
   } catch (e) {
     res.status(400).send(e);
@@ -31,6 +37,7 @@ const findCred = async (req, res) => {
     if (!cred) {
       return res.status(404).send();
     }
+    cred.data = decryptData(cred.data);
     res.status(200).send(cred);
   } catch (e) {
     res.status(400).send(e);
@@ -50,10 +57,12 @@ const updateCred = async (req, res) => {
     return res.status(403).send({ error: 'Invalid Update' });
   }
   try {
-    const cred = await Cred.findOneAndUpdate({ userId: _id, _id: id }, body, { runValidators: true, new: true });
+    const cred = await Cred.findOne({ userId: _id, _id: id });
     if (!cred) {
       return res.status(404).send();
     }
+    fieldsToUpdate.forEach(field => { cred[field] = body[field]; });
+    await cred.save();
     res.status(202).send(cred);
   } catch (e) {
     res.status(500).send(e);

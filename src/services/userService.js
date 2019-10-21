@@ -44,7 +44,6 @@ const updateUser = async (req, res) => {
 const deleteUser = async (req, res) => {
   try {
     await req.user.remove();
-    await Cred.deleteMany({ userId: req.user._id });
     res.status(200).send(req.user);
   } catch (e) {
     res.status(500).send(e);

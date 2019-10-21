@@ -2,7 +2,8 @@
   "extends": "standard",
   "env": {
     "browser": true,
-    "node": true
+    "node": true,
+    "jest": true
   },
   "rules": {
     "semi":["error", "always"],

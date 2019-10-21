@@ -6,15 +6,15 @@ const key = crypto.scryptSync(CIPHER_PASS, 'salt', 24);
 // shown here.
 const iv = Buffer.alloc(16, 0); // Initialization vector.
 
-const cryptData = (pass) => {
+const cryptData = (data) => {
   const cipher = crypto.createCipheriv(CIPHER_ALGORITHM, key, iv);
-  const encrypted = cipher.update(pass, 'utf8', 'hex');
+  const encrypted = cipher.update(data, 'utf8', 'hex');
   return encrypted + cipher.final('hex');
 };
 
-const decryptData = (cryptedPass) => {
+const decryptData = (cryptedData) => {
   const decipher = crypto.createDecipheriv(CIPHER_ALGORITHM, key, iv);
-  const decrypted = decipher.update(cryptedPass, 'hex', 'utf8');
+  const decrypted = decipher.update(cryptedData, 'hex', 'utf8');
   return decrypted + decipher.final('utf8');
 };
 

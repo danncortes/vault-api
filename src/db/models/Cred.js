@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { cryptData } = require('../../helpers/cryptDecrypt');
 
 const credModelObj = {
   data: {
@@ -11,6 +12,16 @@ const credModelObj = {
   }
 };
 
-const credSchema = new mongoose.Schema(credModelObj);
+const credSchema = new mongoose.Schema(credModelObj, { timestamps: true });
+
+credSchema.pre('save', async function (next) {
+  const cred = this;
+
+  if (cred.isModified('data')) {
+    cred.data = cryptData(cred.data);
+  }
+  next();
+});
+
 const Cred = mongoose.model('Cred', credSchema);
-module.exports = Cred;
+module.exports = { Cred, credSchema };
