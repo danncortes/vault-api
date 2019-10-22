@@ -71,7 +71,6 @@ userSchema.methods.generateAuthToken = async function () { // This is accessible
 
 userSchema.pre('save', async function (next) {
   const user = this;
-  console.log('Saving...');
 
   if (user.isModified('password')) {
     user.password = await bcrypt.hash(user.password, 8);

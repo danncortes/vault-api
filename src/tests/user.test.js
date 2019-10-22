@@ -1,34 +1,33 @@
 const request = require('supertest');
-const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken');
 const app = require('../app');
 const User = require('../db/models/User');
-const { CIPHER_PASS } = process.env;
+const { testUserId, testUser, setUpDataBase } = require('./commonDb');
 
 describe('User model', () => {
-  const testUserId = new mongoose.Types.ObjectId();
-
-  const testUser = {
-    _id: testUserId,
-    name: 'Jack',
-    email: 'jack@example.com',
-    password: 'jack123',
-    tokens: [{
-      token: jwt.sign({ _id: testUserId }, CIPHER_PASS)
-    }]
-  };
-
-  beforeEach(async () => {
-    await User.deleteMany();
-    await new User(testUser).save();
-  });
+  beforeEach(setUpDataBase);
 
   it('Should signup a new user', async () => {
-    await request(app).post('/users').send({
+    const response = await request(app).post('/users').send({
       name: 'Mark',
       email: 'makr@example.com',
       password: 'mark123'
     }).expect(201);
+
+    // Assert the user was saved in DB
+    const user = await User.findById(response.body.user._id);
+    expect(user).not.toBeNull();
+
+    // Assertion about the response
+    expect(response.body).toMatchObject({
+      user: {
+        name: 'Mark',
+        email: 'makr@example.com',
+      },
+      token: user.tokens[0].token
+    });
+
+    // Assert no password in response
+    expect(response.body.user.password).toBe(undefined);
   });
 
   it('Should login user', async () => {
@@ -73,6 +72,10 @@ describe('User model', () => {
       .set('Authorization', `Bearer ${testUser.tokens[0].token}`)
       .send()
       .expect(200);
+
+    // Assert the User has been deleted
+    const user = await User.findById(testUserId);
+    expect(user).toBeNull();
   });
 
   it('Should not delete User Profile when user is not authenticated', async () => {
