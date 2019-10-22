@@ -1,6 +1,7 @@
 const request = require('supertest');
 const app = require('../app');
 const User = require('../db/models/User');
+const { Cred } = require('../db/models/Cred');
 const { testUserId, testUser, setUpDataBase } = require('./commonDb');
 
 describe('User model', () => {
@@ -76,6 +77,10 @@ describe('User model', () => {
     // Assert the User has been deleted
     const user = await User.findById(testUserId);
     expect(user).toBeNull();
+
+    // Assert the related Cred have been deleted
+    const cred = await Cred.find({ userId: testUserId });
+    expect(cred).toHaveLength(0);
   });
 
   it('Should not delete User Profile when user is not authenticated', async () => {
