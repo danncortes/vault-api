@@ -1,5 +1,4 @@
 const User = require('../db/models/User');
-const Cred = require('../db/models/Cred');
 
 const findUser = async (req, res) => {
   res.status(200).send(req.user);
@@ -44,6 +43,7 @@ const updateUser = async (req, res) => {
 const deleteUser = async (req, res) => {
   try {
     await req.user.remove();
+    console.log('User deleted Successfully');
     res.status(200).send(req.user);
   } catch (e) {
     res.status(500).send(e);
