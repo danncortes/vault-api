@@ -12,6 +12,7 @@ const testUser = {
   name: 'Jack',
   email: 'jack@example.com',
   password: 'jack123',
+  masterp: '123456',
   tokens: [{
     token: jwt.sign({ _id: testUserId }, `${CIPHER_PASS}`)
   }]

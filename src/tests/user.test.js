@@ -11,7 +11,8 @@ describe('User model', () => {
     const response = await request(app).post('/users').send({
       name: 'Mark',
       email: 'makr@example.com',
-      password: 'mark123'
+      password: 'mark123',
+      masterp: '123456'
     }).expect(201);
 
     // Assert the user was saved in DB
@@ -34,21 +35,24 @@ describe('User model', () => {
   it('Should login user', async () => {
     await request(app).post('/users/login').send({
       email: testUser.email,
-      password: testUser.password
+      password: testUser.password,
+      masterp: testUser.masterp
     }).expect(200);
   });
 
   it('Should not login nonexisting user', async () => {
     await request(app).post('/users/login').send({
       email: 'notEmail@example.com',
-      password: testUser.password
+      password: testUser.password,
+      masterp: testUser.masterp
     }).expect(400);
   });
 
   it('Should not login with wrong password', async () => {
     await request(app).post('/users/login').send({
       email: testUser.email,
-      password: 'xxx'
+      password: 'xxx',
+      masterp: 'xxx'
     }).expect(400);
   });
 

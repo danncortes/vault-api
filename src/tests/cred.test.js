@@ -24,43 +24,34 @@ describe('Cred model', () => {
     expect(cred).not.toBeNull();
   });
 
-<<<<<<< HEAD
-=======
   it('Should not create new Cred when user is not authenticated', async () => {
     await request(app).post('/cred')
       .send({ data: 'this is a test cred' })
       .expect(401);
   });
 
->>>>>>> master
   it('Should fetch Creds', async () => {
     await request(app).get('/cred')
       .set('Authorization', `Bearer ${testUser.tokens[0].token}`)
       .expect(201);
   });
 
-<<<<<<< HEAD
-=======
   it('Should not fetch Creds if there is no authenticated user', async () => {
     await request(app).get('/cred')
       .expect(401);
   });
 
->>>>>>> master
   it('Should find Cred', async () => {
     await request(app).get('/cred/' + testCredId)
       .set('Authorization', `Bearer ${testUser.tokens[0].token}`)
       .expect(200);
   });
 
-<<<<<<< HEAD
-=======
   it('Should not find Cred if there is no authenticated user', async () => {
     await request(app).get('/cred/' + testCredId)
       .expect(401);
   });
 
->>>>>>> master
   it('Should update Cred', async () => {
     const data = 'this is a test cred';
     const dataUpdated = 'this is a test cred ++';
@@ -83,8 +74,6 @@ describe('Cred model', () => {
     expect(cred.body.data).toBe(dataUpdated);
   });
 
-<<<<<<< HEAD
-=======
   it('Should not update Cred if there is no authenticated user', async () => {
     const data = 'this is a test cred';
     const dataUpdated = 'this is a test cred ++';
@@ -100,7 +89,6 @@ describe('Cred model', () => {
       .expect(401);
   });
 
->>>>>>> master
   it('Should delete Cred', async () => {
     await request(app)
       .delete('/cred/' + testCredId)

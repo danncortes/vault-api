@@ -51,10 +51,10 @@ const deleteUser = async (req, res) => {
 };
 
 const loginUser = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, masterp } = req.body;
 
   try {
-    const user = await User.findByCredentials(email, password);
+    const user = await User.findByCredentials(email, password, masterp);
     const token = await user.generateAuthToken();
     res.status(200).send({ user, token });
   } catch (e) {
