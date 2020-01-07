@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 const { cryptData } = require('../../helpers/cryptDecrypt');
 
 const credModelObj = {
+  name: {
+    type: String,
+    required: true
+  },
   data: {
     type: String,
     required: true

@@ -8,11 +8,12 @@ describe('Cred model', () => {
   beforeEach(setUpDataBase);
 
   it('Should create new Cred', async () => {
+    const name = 'this is a test cred name';
     const data = 'this is a test cred';
 
     const response = await request(app).post('/cred')
       .set('Authorization', `Bearer ${testUser.tokens[0].token}`)
-      .send({ data })
+      .send({ name, data })
       .expect(201);
 
     // Assert saved encripted data
@@ -53,13 +54,14 @@ describe('Cred model', () => {
   });
 
   it('Should update Cred', async () => {
+    const name = 'this is a test cred name';
     const data = 'this is a test cred';
     const dataUpdated = 'this is a test cred ++';
 
     // Create a new Cred
     const response = await request(app).post('/cred')
       .set('Authorization', `Bearer ${testUser.tokens[0].token}`)
-      .send({ data });
+      .send({ name, data });
 
     // Updated it
     await request(app).patch('/cred/' + response.body._id)
@@ -75,13 +77,14 @@ describe('Cred model', () => {
   });
 
   it('Should not update Cred if there is no authenticated user', async () => {
+    const name = 'this is a test cred name';
     const data = 'this is a test cred';
     const dataUpdated = 'this is a test cred ++';
 
     // Create a new Cred
     const response = await request(app).post('/cred')
       .set('Authorization', `Bearer ${testUser.tokens[0].token}`)
-      .send({ data });
+      .send({ name, data });
 
     // Updated it
     await request(app).patch('/cred/' + response.body._id)
@@ -108,3 +111,4 @@ describe('Cred model', () => {
       .expect(401);
   });
 });
+ 

@@ -24,6 +24,7 @@ const setUpDataBase = async () => {
   const user = await new User(testUser).save();
   await new Cred({
     _id: testCredId,
+    name: 'This is a 2nd test Cred name',
     data: 'This is a 2nd test Cred',
     userId: user._id
   }).save();
