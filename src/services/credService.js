@@ -9,6 +9,7 @@ const createCred = async (req, res) => {
 
   try {
     await cred.save();
+    cred.data = decryptData(cred.data);
     res.status(201).send(cred);
   } catch (e) {
     res.status(400).send(e);
