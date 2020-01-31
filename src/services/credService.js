@@ -18,7 +18,7 @@ const createCred = async (req, res) => {
 
 const fetchCred = async (req, res) => {
   try {
-    const cred = await Cred.find({ userId: req.user._id });
+    const cred = await Cred.find({ userId: req.user._id }).sort({ updatedAt: -1 });
     if (cred.length > 0) {
       cred.forEach(cr => {
         cr.data = decryptData(cr.data);
@@ -64,6 +64,7 @@ const updateCred = async (req, res) => {
     }
     fieldsToUpdate.forEach(field => { cred[field] = body[field]; });
     await cred.save();
+    cred.data = decryptData(cred.data);
     res.status(202).send(cred);
   } catch (e) {
     res.status(500).send(e);
