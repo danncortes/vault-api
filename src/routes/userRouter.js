@@ -1,4 +1,5 @@
-const userRouter = require('express')();
+const userRouter = require('express').Router();
+
 const { createUser, findUser, updateUser, deleteUser, loginUser, logoutUser, logoutUserAll } = require('../services/userService');
 const auth = require('../middleware/auth');
 

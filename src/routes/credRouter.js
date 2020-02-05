@@ -1,4 +1,5 @@
-const credRouter = require('express')();
+const credRouter = require('express').Router();
+
 const { createCred, fetchCred, findCred, updateCred, deleteCred } = require('../services/credService');
 const auth = require('../middleware/auth');
 
