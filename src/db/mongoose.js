@@ -7,7 +7,7 @@ const environment = process.env.NODE_ENV;
 const { DATABASE_USER, DATABASE_PASS, DATABASE_NAME, DATABASE_HOST } = process.env;
 let connectionUrl = `mongodb+srv://${DATABASE_USER}:${DATABASE_PASS}@${DATABASE_HOST}/${DATABASE_NAME}?retryWrites=true&w=majority`;
 
-if (environment === 'development') {
+if (environment === 'development' || environment === 'test') {
   const { DATABASE_HOST, DATABASE_PORT, DATABASE_NAME } = process.env;
   connectionUrl = `mongodb://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}`;
 }
@@ -20,7 +20,7 @@ mongoose.connect(connectionUrl, {
   if (error) {
     return console.log(chalk.red.bold('Error onnecting to Data Base'));
   }
-  console.log(chalk.bgGreenBright.bold('Connected to Data Base Successfully!'));
+  console.log(chalk.bgGreenBright.bold(`Connected to Data Base "${connectionUrl}" Successfully!`));
 });
 
 mongoose.set('useFindAndModify', false);

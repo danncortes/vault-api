@@ -4,6 +4,7 @@ const { CIPHER_PASS } = process.env;
 
 const auth = async (req, res, next) => {
   let token = req.header('Authorization');
+
   try {
     token = token.replace('Bearer ', '');
     const decoded = await jwt.verify(token, `${CIPHER_PASS}`);

@@ -16,7 +16,7 @@ const userModelObj = {
     unique: true,
     required: true,
     lowercase: true,
-    validate (value) {
+    validate(value) {
       if (!validateEmail(value)) {
         throw new Error('Email is invalid');
       }
@@ -37,7 +37,12 @@ const userModelObj = {
         required: true
       }
     }
-  ]
+  ],
+  verified: {
+    type: Boolean,
+    required: true,
+    default: false
+  }
 };
 
 const userSchema = new mongoose.Schema(userModelObj, { timestamps: true });
@@ -46,14 +51,14 @@ userSchema.statics.findByCredentials = async (email, password, masterp) => { // 
   const user = await User.findOne({ email });
 
   if (!user) {
-    throw new Error('Enable to login');
+    throw new Error('Error Login In');
   }
 
   const passwordMatch = await bcrypt.compare(password, user.password);
   const masterPassMatch = await bcrypt.compare(masterp, user.masterp);
 
   if (!passwordMatch || !masterPassMatch) {
-    throw new Error('Enable to login');
+    throw new Error('Error Login In');
   }
   return user;
 };

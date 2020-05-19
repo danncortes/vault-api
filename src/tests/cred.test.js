@@ -111,4 +111,3 @@ describe('Cred model', () => {
       .expect(401);
   });
 });
- 
