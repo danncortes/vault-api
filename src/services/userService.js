@@ -1,4 +1,7 @@
 const User = require('../db/models/User');
+const VerifyAccount = require('../db/models/VerifyAccount');
+const { CIPHER_PASS } = process.env;
+const jwt = require('jsonwebtoken');
 
 const findUser = async (req, res) => {
   res.status(200).send(req.user);
@@ -8,6 +11,14 @@ const createUser = async (req, res) => {
   const user = new User(req.body);
   try {
     await user.save();
+
+    // Token creation to verify account
+    const verifyAccount = new VerifyAccount({
+      userId: user._id,
+      token: jwt.sign({ _id: user._id.toString() }, CIPHER_PASS, { expiresIn: '24h' })
+    });
+    verifyAccount.save();
+
     const token = await user.generateAuthToken();
     console.log('User created Successfully');
     res.status(201).send({ user, token });

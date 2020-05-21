@@ -2,23 +2,26 @@ const request = require('supertest');
 const app = require('../app');
 const { Cred } = require('../db/models/Cred');
 const { testCredId, testUser, setUpDataBase } = require('./commonDb');
-const { cryptData } = require('../helpers/cryptDecrypt');
 
 describe('Cred model', () => {
   beforeEach(setUpDataBase);
 
   it('Should create new Cred', async () => {
-    const name = 'this is a test cred name';
-    const data = 'this is a test cred';
+    const dataToSave = {
+      name: 'this is a test cred name',
+      data: 'this is a test cred'
+    };
 
     const response = await request(app).post('/cred')
       .set('Authorization', `Bearer ${testUser.tokens[0].token}`)
-      .send({ name, data })
+      .send(dataToSave)
       .expect(201);
 
     // Assert saved encripted data
-    const encryptedData = cryptData(data);
-    expect(response.body.data).toBe(encryptedData);
+    const { name, data } = response.body;
+    const resp = JSON.stringify({ name, data });
+    const expected = JSON.stringify(dataToSave);
+    expect(resp).toBe(expected);
 
     // Assert cred is saved in data base
     const cred = await Cred.findById(response.body._id);
