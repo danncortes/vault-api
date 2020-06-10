@@ -3,12 +3,12 @@ const userRouter = require('express').Router();
 const { createUser, findUser, updateUser, deleteUser, loginUser, logoutUser, logoutUserAll } = require('../services/userService');
 const auth = require('../middleware/auth');
 
-userRouter.post('/users', createUser);
-userRouter.post('/users/login', loginUser);
-userRouter.get('/users/me', auth, findUser);
-userRouter.patch('/users/me', auth, updateUser);
-userRouter.delete('/users/me', auth, deleteUser);
-userRouter.post('/users/logout', auth, logoutUser);
-userRouter.post('/users/logoutAll', auth, logoutUserAll);
+userRouter.post('/api/auth/login', loginUser);
+userRouter.post('/api/auth/logout', auth, logoutUser);
+userRouter.post('/api/auth/logoutAll', auth, logoutUserAll);
+userRouter.get('/api/auth/user', auth, findUser);
+userRouter.post('/api/users', createUser);
+userRouter.patch('/api/users/me', auth, updateUser);
+userRouter.delete('/api/users/me', auth, deleteUser);
 
 module.exports = userRouter;

@@ -1,7 +1,7 @@
 const User = require('../db/models/User');
 
 const findUser = async (req, res) => {
-  res.status(200).send(req.user);
+  res.status(200).send({ user: req.user });
 };
 
 const createUser = async (req, res) => {
