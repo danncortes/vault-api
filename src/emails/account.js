@@ -2,13 +2,15 @@
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-const verifyEmail = async ({ email, name, token }) => {
+const { FE_HOST, EMAIL_SENDER } = process.env;
+
+const verifyEmail = async ({ email, token }) => {
   try {
     await sgMail.send({
       to: email,
-      from: 'tresorapp24@gmail.com',
-      subject: 'Verify your account in Vault',
-      html: `<div>Hi ${name}, welcome to Vault, please verify your account here: <a href="${token}">Verify my Account</a></div>`
+      from: EMAIL_SENDER,
+      subject: 'Verify your account in Tresor',
+      html: `<div>Hi ${email}, welcome to Tresor, please verify your account here: <a href="${FE_HOST}/account?verification_token=${token}">Verify my Account</a></div>`
     });
   } catch (err) {
     console.log('verifyEmail -> err', err);

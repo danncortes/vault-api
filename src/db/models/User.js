@@ -16,7 +16,7 @@ const userModelObj = {
     unique: true,
     required: true,
     lowercase: true,
-    validate(value) {
+    validate (value) {
       if (!validateEmail(value)) {
         throw new Error('Email is invalid');
       }
@@ -74,7 +74,7 @@ userSchema.methods.toJSON = function () { // This runs everytime a response is s
 
 userSchema.methods.generateAuthToken = async function () { // This is accessible from a user instance -> user.generateAuthToken
   const user = this;
-  const token = jwt.sign({ _id: user._id.toString() }, CIPHER_PASS);
+  const token = jwt.sign({ _id: user._id.toString() }, CIPHER_PASS, { expiresIn: '30m' });
   user.tokens.push({ token });
   await user.save();
   return token;
