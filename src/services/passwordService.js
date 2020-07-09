@@ -2,6 +2,7 @@ const Password = require('../db/models/Password');
 const User = require('../db/models/User');
 const jwt = require('jsonwebtoken');
 const { CIPHER_PASS } = process.env;
+const bcrypt = require('bcryptjs');
 const { resetPassword: resetPasswordEmail } = require('../emails/reset-password');
 
 const newPasswordToken = async (req, res) => {
@@ -47,8 +48,23 @@ const resetPassword = async (req, res) => {
   }
 };
 
+const changePassword = async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  const { user } = req;
+  try {
+    await bcrypt.compare(currentPassword, user.password);
+    user.password = newPassword;
+    user.tokens = [];
+    user.save();
+    res.status(200).send();
+  } catch (e) {
+    res.status(404).send(e);
+  }
+};
+
 module.exports = {
   newPasswordToken,
   verifyPasswordToken,
-  resetPassword
+  resetPassword,
+  changePassword
 };
