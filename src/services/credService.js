@@ -1,5 +1,6 @@
 const { Cred, credSchema } = require('../db/models/Cred');
 const { decryptData } = require('../helpers/cryptDecrypt');
+const bcrypt = require('bcryptjs');
 
 const createCred = async (req, res) => {
   const cred = new Cred({
@@ -86,10 +87,22 @@ const deleteCred = async (req, res) => {
   }
 };
 
+const downloadCreds = async (req, res) => {
+  const { password } = req.body;
+  const { user } = req;
+  const match = await bcrypt.compare(password, user.password);
+  if (match) {
+    res.status(200).send();
+  } else {
+    res.status(404).send();
+  }
+};
+
 module.exports = {
   createCred,
   fetchCred,
   findCred,
   updateCred,
-  deleteCred
+  deleteCred,
+  downloadCreds
 };

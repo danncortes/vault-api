@@ -51,14 +51,14 @@ const resetPassword = async (req, res) => {
 const changePassword = async (req, res) => {
   const { currentPassword, newPassword } = req.body;
   const { user } = req;
-  try {
-    await bcrypt.compare(currentPassword, user.password);
+  const match = await bcrypt.compare(currentPassword, user.password);
+  if (match) {
     user.password = newPassword;
     user.tokens = [];
     user.save();
     res.status(200).send();
-  } catch (e) {
-    res.status(404).send(e);
+  } else {
+    res.status(404).send();
   }
 };
 
