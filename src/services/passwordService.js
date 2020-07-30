@@ -62,9 +62,21 @@ const changePassword = async (req, res) => {
   }
 };
 
+const checkPassword = async (req, res) => {
+  const { password } = req.body;
+  const { user } = req;
+  const match = await bcrypt.compare(password, user.password);
+  if (match) {
+    res.status(200).send();
+  } else {
+    res.status(404).send();
+  }
+};
+
 module.exports = {
   newPasswordToken,
   verifyPasswordToken,
   resetPassword,
-  changePassword
+  changePassword,
+  checkPassword
 };

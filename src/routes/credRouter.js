@@ -5,8 +5,7 @@ const {
   fetchCred,
   findCred,
   updateCred,
-  deleteCred,
-  downloadCreds
+  deleteCred
 } = require('../services/credService');
 const auth = require('../middleware/auth');
 
@@ -15,6 +14,5 @@ credRouter.post('/api/credential', auth, createCred);
 credRouter.get('/api/credential/:id', auth, findCred);
 credRouter.patch('/api/credential/:id', auth, updateCred);
 credRouter.delete('/api/credential/:id', auth, deleteCred);
-credRouter.post('/api/credential/download', auth, downloadCreds);
 
 module.exports = credRouter;

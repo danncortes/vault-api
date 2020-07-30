@@ -1,8 +1,11 @@
 const User = require('../db/models/User');
+const { Cred } = require('../db/models/Cred');
 const Account = require('../db/models/Account');
 const { CIPHER_PASS } = process.env;
 const jwt = require('jsonwebtoken');
+const CryptoJS = require('crypto-js')
 const { verifyEmail } = require('../emails/account');
+const { decryptData } = require('../helpers/cryptDecrypt');
 
 const findUser = async (req, res) => {
   res.status(200).send({ user: req.user });
@@ -97,6 +100,41 @@ const logoutUserAll = async (req, res) => {
   }
 };
 
+const changeMasterKey = async (req, res) => {
+  const { masterp, newMasterKey } = req.body
+
+  try {
+    // Get all credentials
+    let credentials = await Cred.find({ userId: req.user._id }).sort({ updatedAt: -1 });
+
+    if (credentials.length > 0) {
+      for (let i = 0; i <= credentials.length - 1; i++) {
+        const { _id, name } = credentials[i]
+        //Decrypt 1
+        let data = decryptData(credentials[i].data)
+
+        //Decrypt 2
+        const bytes = CryptoJS.AES.decrypt(data, `${masterp}`)
+        data = JSON.parse(bytes.toString(CryptoJS.enc.Utf8))
+
+        //Encrypt 1
+        data = CryptoJS.AES.encrypt(JSON.stringify(data), `${newMasterKey}`).toString()
+        credentials[i].data = data
+        await credentials[i].save()
+      }
+    }
+
+    const { user } = req
+    user.masterp = `${newMasterKey}`
+    user.tokens = [];
+    await user.save()
+    res.status(200).send()
+  }
+  catch (e) {
+    res.status(403).send(e);
+  }
+}
+
 module.exports = {
   createUser,
   findUser,
@@ -104,5 +142,6 @@ module.exports = {
   deleteUser,
   loginUser,
   logoutUser,
-  logoutUserAll
+  logoutUserAll,
+  changeMasterKey
 };
